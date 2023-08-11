@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="NamedTextFieldContainer" style="flex-grow: 0; flex-direction: column; height: 30px; width: 350px; background-color: rgb(91, 91, 91); justify-content: space-around; -unity-text-align: middle-left;">
+        <ui:GroupBox name="NamedTextFieldGroupBox" style="flex-direction: row; flex-shrink: 0; flex-grow: 1; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; -unity-text-align: middle-left; white-space: normal; -unity-background-scale-mode: stretch-to-fill;">
+            <ui:GroupBox name="GroupBoxX" style="flex-grow: 1; flex-shrink: 1; flex-direction: row;">
+                <ui:Label text="X:" display-tooltip-when-elided="true" name="LabexX" style="flex-shrink: 1; flex-grow: 1;" />
+                <ui:Label text="0.0" display-tooltip-when-elided="true" name="ValueX" style="flex-grow: 1; flex-shrink: 1;" />
+            </ui:GroupBox>
+            <ui:GroupBox name="GroupBoxY" style="flex-grow: 1; flex-shrink: 1; flex-direction: row;">
+                <ui:Label text="Y:" display-tooltip-when-elided="true" name="LabexY" style="flex-shrink: 1; flex-grow: 1;" />
+                <ui:Label text="0.0" display-tooltip-when-elided="true" name="ValueY" style="flex-shrink: 1; flex-grow: 1;" />
+            </ui:GroupBox>
+            <ui:GroupBox name="GroupBoxZ" style="flex-grow: 1; flex-shrink: 1; flex-direction: row;">
+                <ui:Label text="Z:" display-tooltip-when-elided="true" name="LabexZ" style="flex-shrink: 1; flex-grow: 1;" />
+                <ui:Label text="0.0" display-tooltip-when-elided="true" name="ValueZ" style="flex-shrink: 1; flex-grow: 1;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>

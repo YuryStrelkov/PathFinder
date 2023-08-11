@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="NamedTextFieldContainer" style="flex-grow: 0; flex-direction: column; height: 30px; width: 100%; background-color: rgb(91, 91, 91); justify-content: space-around; flex-shrink: 0;">
+        <ui:GroupBox name="NamedTextFieldGroupBox" style="flex-direction: row; flex-shrink: 0; flex-grow: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-items: center; justify-content: space-between;">
+            <ui:Label text="LabelName" display-tooltip-when-elided="true" name="TextLabel" style="flex-shrink: 1; flex-grow: 1; font-size: 12px; -unity-text-align: middle-left; width: 33%; flex-direction: row;" />
+            <ui:Label text="LabelValue" display-tooltip-when-elided="true" name="TextValue" style="flex-shrink: 1; flex-grow: 1; -unity-text-align: middle-left; border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; overflow: visible; background-color: rgba(132, 132, 132, 0.61); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-direction: row; width: 66%;" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,41 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgb(196, 196, 196); width: 350px; height: 300px;">
+        <ui:Foldout name="PathSegment" style="flex-direction: row; height: 344px; flex-grow: 1;">
+            <ui:GroupBox text="StartPoint" name="StartPointContainer" style="width: 259px;">
+                <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: stretch;">
+                    <ui:VisualElement name="XContainer" style="flex-direction: row; justify-content: space-around; align-items: center; flex-wrap: wrap; flex-grow: 1;">
+                        <ui:Label text="X: " display-tooltip-when-elided="true" name="XLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="XValue" style="flex-shrink: 1; flex-grow: 1;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="YContainer" style="flex-direction: row; justify-content: space-between; flex-grow: 1;">
+                        <ui:Label text="Y: " display-tooltip-when-elided="true" name="YLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="YValue" style="flex-shrink: 1; flex-grow: 1;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ZContainer" style="flex-direction: row; justify-content: space-between; flex-grow: 1;">
+                        <ui:Label text="Z: " display-tooltip-when-elided="true" name="ZLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="ZValue" style="flex-grow: 1; flex-shrink: 1;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:GroupBox>
+            <ui:GroupBox text="StartPoint" name="EndPointContainer" style="width: 259px;">
+                <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: stretch;">
+                    <ui:VisualElement name="XContainer" style="flex-direction: row; justify-content: space-around; align-items: center; flex-wrap: wrap; flex-grow: 1;">
+                        <ui:Label text="X: " display-tooltip-when-elided="true" name="XLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="XValue" style="flex-shrink: 1; flex-grow: 1;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="YContainer" style="flex-direction: row; justify-content: space-between; flex-grow: 1;">
+                        <ui:Label text="Y: " display-tooltip-when-elided="true" name="YLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="YValue" style="flex-shrink: 1; flex-grow: 1;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ZContainer" style="flex-direction: row; justify-content: space-between; flex-grow: 1;">
+                        <ui:Label text="Z: " display-tooltip-when-elided="true" name="ZLabel" style="flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Label text="0.0" display-tooltip-when-elided="true" name="ZValue" style="flex-grow: 1; flex-shrink: 1;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:GroupBox>
+            <ui:GroupBox text="ReferenceView" name="ReferenceViewContainer" style="background-image: url(&apos;project://database/Packages/com.unity.collab-proxy/Editor/PlasticSCM/Assets/Images/iconplastic.png?fileID=2800000&amp;guid=3042b019b052942a1baf7aa49d7ca6bb&amp;type=3#iconplastic&apos;); height: 270px; -unity-background-scale-mode: scale-to-fit;">
+                <ui:VisualElement style="flex-grow: 0; flex-wrap: wrap; align-items: flex-end; justify-content: space-around; flex-direction: row;" />
+            </ui:GroupBox>
+        </ui:Foldout>
+    </ui:VisualElement>
+</ui:UXML>

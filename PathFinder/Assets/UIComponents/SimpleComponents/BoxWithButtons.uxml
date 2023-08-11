@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="height: 60px; width: 150px; background-color: rgba(0, 0, 0, 0.61);">
+        <ui:GroupBox style="flex-shrink: 1; flex-grow: 1; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-direction: column; -unity-text-align: upper-left; color: rgb(210, 210, 210); background-color: rgba(0, 0, 0, 0.61);">
+            <ui:Label text="GroupName" display-tooltip-when-elided="true" style="padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; -unity-text-align: middle-center; color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0.61);" />
+            <ui:GroupBox style="flex-direction: row; background-color: rgba(0, 0, 0, 0.61); flex-shrink: 1; flex-grow: 1;">
+                <ui:Button text="Button1" display-tooltip-when-elided="true" name="Button1" style="flex-shrink: 1; flex-grow: 1;" />
+                <ui:Button text="Button2" display-tooltip-when-elided="true" name="Button2" enable-rich-text="true" style="flex-shrink: 1; flex-grow: 1;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>

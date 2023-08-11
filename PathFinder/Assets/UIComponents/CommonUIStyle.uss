@@ -1,0 +1,48 @@
+.namedTextField {
+    background-color: rgb(127, 127, 127);
+    flex-grow: 1;
+    -unity-font-style: bold;
+}
+
+.namedTextFieldName {
+    background-color: rgb(182, 169, 169);
+    -unity-text-align: middle-center;
+    flex-grow: 1;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.namedTextFieldValue {
+    background-color: rgb(182, 169, 169);
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.ButtonsPathViewer {
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    background-color: rgb(182, 169, 169);
+    -unity-font-style: bold;
+}
+
+.Labels {
+    font-size: 14px;
+    background-color: rgb(182, 169, 169);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+.Containers {
+    background-color: rgb(40, 40, 20);
+}
+
+.DropDowns {
+    background-color: rgb(182, 169, 169);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    align-items: center;
+}

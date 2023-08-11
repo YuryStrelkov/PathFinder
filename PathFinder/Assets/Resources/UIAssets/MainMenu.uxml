@@ -1,0 +1,67 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="uiRoot" style="flex-grow: 1; flex-direction: column; justify-content: space-between; align-items: center; width: 100%; height: 100%; flex-wrap: wrap-reverse;">
+        <ui:VisualElement style="flex-grow: 0; flex-shrink: 1; flex-direction: row; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0;">
+            <ui:Button text="LoadMap" display-tooltip-when-elided="true" name="LoadMapBtn" style="width: 10%; flex-grow: 1;" />
+            <ui:Button text="SaveMap" display-tooltip-when-elided="true" name="SaveMapBtn" style="width: 10%; flex-grow: 1; display: none;" />
+            <ui:Button text="SavePath" display-tooltip-when-elided="true" name="SavePathBtn" style="width: 10%; flex-grow: 1;" />
+            <ui:Button text="Move!" display-tooltip-when-elided="true" name="StartMovementBtn" style="width: 10%; flex-grow: 1;" />
+            <ui:Button text="Settings" display-tooltip-when-elided="true" name="SettingsBtn" style="width: 10%; flex-grow: 1;" />
+            <ui:Button text="About" display-tooltip-when-elided="true" name="AboutBtn" style="width: 10%; flex-grow: 1;" />
+            <ui:Button text="Exit" display-tooltip-when-elided="true" name="ExitBtn" style="width: 10%; flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-wrap: wrap; align-items: center; justify-content: center; width: 100%;">
+            <ui:VisualElement name="ApplicationExitForm" style="flex-grow: 0; flex-shrink: 1; flex-direction: column; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0; -unity-background-image-tint-color: rgb(60, 60, 60); background-color: rgb(88, 88, 88); display: none;">
+                <ui:VisualElement style="width: 100%; flex-direction: row; justify-content: space-between; background-color: rgb(60, 60, 60); -unity-background-image-tint-color: rgb(88, 88, 88);">
+                    <ui:Label text="Сохранить пути перед выходом?" display-tooltip-when-elided="true" style="-unity-text-align: middle-right; -unity-background-image-tint-color: rgb(45, 45, 45); -unity-text-outline-color: rgb(255, 255, 255); background-color: rgb(70, 70, 70);" />
+                    <ui:Button text="Cancel" display-tooltip-when-elided="true" name="CancelExitFormBtn" style="background-color: rgb(70, 70, 70);" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row-reverse; justify-content: space-around; width: 247px;">
+                    <ui:Button text="Выйти" display-tooltip-when-elided="true" name="JustExitBtn" style="width: 50%; flex-grow: 1; flex-shrink: 1;" />
+                    <ui:Button text="Сохранить" display-tooltip-when-elided="true" name="SaveAllBeforeExitBtn" style="width: 50%; flex-grow: 1; flex-shrink: 1; height: auto;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Button text="2D/3D" display-tooltip-when-elided="true" name="switchProjectionBtn" style="height: 50px; width: 50px; left: 47%; top: -45%;" />
+            <ui:VisualElement name="PathSaveSelectionForm" style="flex-grow: 0; flex-shrink: 1; flex-direction: column; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0; -unity-background-image-tint-color: rgb(60, 60, 60); background-color: rgb(88, 88, 88); display: none; height: 106px;">
+                <ui:VisualElement style="width: 100%; flex-direction: row; justify-content: space-between; background-color: rgb(60, 60, 60); -unity-background-image-tint-color: rgb(88, 88, 88);">
+                    <ui:Label text="Сохранить путь как" display-tooltip-when-elided="true" style="-unity-text-align: middle-right; -unity-background-image-tint-color: rgb(45, 45, 45); -unity-text-outline-color: rgb(255, 255, 255); background-color: rgb(60, 60, 60);" />
+                    <ui:Button text="Close" display-tooltip-when-elided="true" name="CloseSavePathAsBtn" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row-reverse;">
+                    <ui:GroupBox name="Array" text="PointsArray" style="flex-shrink: 1; flex-grow: 1;">
+                        <ui:Button text="RawArray" display-tooltip-when-elided="true" name="SaveRawPathArray" style="width: auto; flex-grow: 1;" />
+                        <ui:Button text="ProcessedArray" display-tooltip-when-elided="true" name="SaveProcessedPathArray" style="width: auto; flex-grow: 1;" />
+                    </ui:GroupBox>
+                    <ui:GroupBox name="JsonGroup" text="Json" style="flex-shrink: 1; justify-content: space-between;">
+                        <ui:Button text="RawJson" display-tooltip-when-elided="true" name="SaveRawPathJson" style="width: auto; flex-grow: 1;" />
+                        <ui:Button text="ProcessedJson" display-tooltip-when-elided="true" name="SaveProcessedPathJson" style="width: auto; flex-grow: 1;" />
+                    </ui:GroupBox>
+                </ui:VisualElement>
+                <ui:Button text="SaveAllPathInfo" display-tooltip-when-elided="true" name="SaveAllPathInfoBtn" style="width: auto; flex-grow: 1; height: 21px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="MoveForm" style="flex-grow: 0; flex-shrink: 1; flex-direction: column; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0; -unity-background-image-tint-color: rgb(60, 60, 60); background-color: rgb(88, 88, 88); display: none;">
+                <ui:VisualElement style="width: 100%; flex-direction: row; justify-content: space-between; background-color: rgb(60, 60, 60); -unity-background-image-tint-color: rgb(88, 88, 88);">
+                    <ui:Label text="Не обнаружено подключённых устройств..." display-tooltip-when-elided="true" style="-unity-text-align: middle-right; -unity-background-image-tint-color: rgb(45, 45, 45); -unity-text-outline-color: rgb(255, 255, 255); background-color: rgb(60, 60, 60); height: 30px;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row-reverse; justify-content: space-around; width: 247px;">
+                    <ui:Button text="Продолжить" display-tooltip-when-elided="true" name="ContinueBtn" style="width: auto; flex-grow: 1; flex-shrink: 1;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="SettingsForm" style="flex-grow: 0; flex-shrink: 1; flex-direction: column; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0; -unity-background-image-tint-color: rgb(60, 60, 60); background-color: rgb(88, 88, 88); display: none;">
+                <ui:VisualElement style="width: 100%; flex-direction: row; justify-content: space-between; background-color: rgb(60, 60, 60); -unity-background-image-tint-color: rgb(88, 88, 88);">
+                    <ui:Label text="Нет доступных настроек" display-tooltip-when-elided="true" style="-unity-text-align: middle-right; -unity-background-image-tint-color: rgb(45, 45, 45); -unity-text-outline-color: rgb(255, 255, 255); background-color: rgb(60, 60, 60); height: 30px;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row-reverse; justify-content: space-around; width: 247px;">
+                    <ui:Button text="Продолжить" display-tooltip-when-elided="true" name="ContinueBtn" style="width: auto; flex-grow: 1; flex-shrink: 1;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="AboutForm" style="flex-grow: 0; flex-shrink: 1; flex-direction: column; justify-content: space-around; flex-basis: auto; opacity: 1; align-items: center; top: 0; -unity-background-image-tint-color: rgb(60, 60, 60); background-color: rgb(88, 88, 88); display: none; height: 500px; width: 700px;">
+                <ui:VisualElement style="width: 100%; flex-direction: row; justify-content: center; background-color: rgb(60, 60, 60); -unity-background-image-tint-color: rgb(88, 88, 88); flex-grow: 1; align-items: center;">
+                    <ui:Label text="Работа с картой:&#10;&#x9;Чтобы начать работу, в первую очередь загрузите &#10;карту(&quot;LoadMap&quot;).&#10;&#x9;Перейдите в режим сверху(&quot;2d/3d&quot;). Указывая точки&#10;двойным щелчком, постройте необходимый путь. Если&#10;какая-то точка лишня - удалите ее кликнув на нее&#10;дважды. Если какая-то точка находится не на своём&#10;месте - нажмите на нее и перетяните в нужное место.&#10;&#x9;Что бы сохранить результат построения карт нажмите&#10;&quot;SavePath&quot;.&#10;&#x9;Что бы отправить рассчитанный путь на роботизированную&#10;платформу нажмите &quot;Move!&quot;.&#10;Работа с камерой:&#10;&#x9;Что бы перемещать камеру в плоскости экрана - зажмите&#10;колёсико мыши и передвиньте ее в нужное положение.&#10;&#x9;Что изменить масштаб камеры - вращайте колёсико мыши.&#10;&#x9;Что повернуть камеру - зажмите правую кнопку мыши и&#10;поверните на необходимый угол. При просмотре сверху&#10;вращение неактивно.&#10;" display-tooltip-when-elided="true" style="-unity-text-align: middle-left; -unity-background-image-tint-color: rgb(45, 45, 45); -unity-text-outline-color: rgb(255, 255, 255); background-color: rgb(60, 60, 60); height: 284px; white-space: normal; flex-shrink: 1; font-size: 14px; color: rgb(255, 255, 255);" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row-reverse; justify-content: space-around; width: 247px;">
+                    <ui:Button text="Продолжить" display-tooltip-when-elided="true" name="ContinueBtn" style="width: auto; flex-grow: 1; flex-shrink: 1;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
