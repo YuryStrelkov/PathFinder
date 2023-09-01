@@ -85,9 +85,9 @@ Shader "MapUtilsShaders/GridShader"
                         alpha = 1 - alpha;
                     }
 
-                    if (abs(i.uv.x) <= _line_size * 0.5)return fixed4(_x_axis_color.rgb, alpha);
+                    if (abs(i.uv.x) <= _line_size * 2.5)return fixed4(_x_axis_color.rgb, alpha);
 
-                    if (abs(i.uv.y) <= _line_size * 0.5)return fixed4(_y_axis_color.rgb, alpha);
+                    if (abs(i.uv.y) <= _line_size * 2.5)return fixed4(_y_axis_color.rgb, alpha);
 
                     if (abs(remainder(i.uv.y, _grid_y_step)) <= 0.5 * _line_size)return fixed4(_line_color.rgb, alpha);
 

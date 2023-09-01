@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -9,6 +7,19 @@ public class MapRenderer : MonoBehaviour
 {
     private MeshFilter   _meshFilter;
     private MeshRenderer _meshRenderer;
+    public Vector3 MeshSize => _meshFilter.sharedMesh == null ? Vector3.zero : _meshFilter.sharedMesh.bounds.size;
+    public Vector3 MeshCenter => _meshFilter.sharedMesh == null ? Vector3.zero : _meshFilter.sharedMesh.bounds.center;
+    public string MeshName => _meshFilter.sharedMesh == null ? "no mesh!": _meshFilter.sharedMesh.name;
+
+    public Texture MainTexture
+    {
+        get => _meshRenderer.sharedMaterial == null ? null : _meshRenderer.sharedMaterial.mainTexture;
+        set 
+        {
+            if (_meshRenderer.sharedMaterial == null) return;
+            _meshRenderer.sharedMaterial.mainTexture = value;
+        }
+    }
     // Start is called before the first frame update
     void Awake()
     {

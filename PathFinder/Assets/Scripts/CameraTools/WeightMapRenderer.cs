@@ -1,71 +1,38 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class WeightMapRenderer : MonoBehaviour
+public class WeightMapRenderer : ReferenceViewRenderer
 {
-    private Camera   _camera;
-    [SerializeField]
-    private Material _material;
-    [SerializeField]
-    RenderResolutions _textureResolution = RenderResolutions.Middle;
-    RenderTexture _texture;
+    private static WeightMapRenderer _instance;
 
-    enum RenderResolutions
+    public static WeightMapRenderer Instance => _instance;
+
+    private void Awake()
     {
-        Minimal = 128,
-        Middle  = 512,
-        Big     = 1024,
-        Huge    = 2048
+        _instance = this;
+        _instance._aspect = 1.0f;
+        _instance.InitRenderTexture();
     }
 
-    void CreateRenderTexture(RenderResolutions resolution)
+    public new void RenderReferenceView()
     {
-        if (_camera == null)
-            return;
+        if (_camera == null) return;
+        if (AreaMap.Instance.DefaultRenderer == null) return;
+        if (AreaMap.Instance.HeightsRenderer == null) return;
+        if (AreaMap.Instance.HeatRenderer    == null) return;
 
-        if (_texture == null) 
-        {
-            _texture = new RenderTexture((int)resolution, (int)resolution, 8);
-            _camera.targetTexture = _texture;
-            return;
-        }
-        if (_texture.width == (int)resolution) 
-        {
-            return;
-        }
-        _texture.Release();
-        _texture = new RenderTexture((int)resolution, (int)resolution, 8);
-        _camera.targetTexture = _texture;
-    }
+        bool defaultRendererState = AreaMap.Instance.DefaultRenderer.gameObject.activeInHierarchy;
+        bool heightRendererState = AreaMap.Instance.HeightsRenderer.gameObject.activeInHierarchy;
+        bool heatRendererState = AreaMap.Instance.HeatRenderer.gameObject.activeInHierarchy;
 
-    private void OnValidate()
-    {
-        CreateRenderTexture(_textureResolution);
-    }
-
-    public Material WeightsMaterial
-    {
-        get 
-        {
-            return _material;
-        }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        _camera = GetComponent<Camera>();
-        if (_material == null) _material = new Material(Shader.Find("MapUtilsShaders/weightsMapShader"));
-        _camera.SetReplacementShader(_material.shader, "");
-        CreateRenderTexture(_textureResolution);
-    }
-
-    private void RenderImage()
-    {
-        _camera.RenderWithShader(_material.shader, "");
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        RenderImage();
+        AreaMap.Instance.HeightsRenderer.gameObject.SetActive(true);
+        AreaMap.Instance.HeatRenderer.gameObject.SetActive(false);
+        AreaMap.Instance.DefaultRenderer.gameObject.SetActive(false);
+        _camera.gameObject.SetActive(true);
+        _camera.Render();// DontRestore();
+        _camera.gameObject.SetActive(false);
+        AreaMap.Instance.HeightsRenderer.gameObject.SetActive(heightRendererState);
+        AreaMap.Instance.HeatRenderer.gameObject.SetActive(heatRendererState);
+        AreaMap.Instance.DefaultRenderer.gameObject.SetActive(defaultRendererState);
     }
 }

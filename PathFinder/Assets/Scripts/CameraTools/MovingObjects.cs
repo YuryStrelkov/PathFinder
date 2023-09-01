@@ -39,6 +39,7 @@ public class MovingObjects : MonoBehaviour
     private Ray ray_4;
     private void OnDrawGizmos()
     {
+        if (_camera == null) return;
         ray_1 = _camera.ScreenPointToRay(new Vector3(0, 0, 0));
         ray_2 = _camera.ScreenPointToRay(new Vector3(0, _camera.pixelHeight, 0));
         ray_3 = _camera.ScreenPointToRay(new Vector3(_camera.pixelWidth, 0, 0));

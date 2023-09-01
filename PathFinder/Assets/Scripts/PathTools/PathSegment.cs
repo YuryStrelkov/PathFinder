@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static AreaMap;
 using static ObjMesh;
 
 public struct CircularBuffer
@@ -137,7 +138,6 @@ public struct RunningAverage3
                            _z.Call(value.z));
     }
 }
-
 public struct RunningAverage2
 {
     RunningAverage _x;
@@ -166,7 +166,6 @@ public struct RunningAverage2
     public Vector2 Call(Vector2 value) => new Vector2(_x.Call(value.x), _y.Call(value.y));
 }
 
-
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshFilter))]
 public class PathSegment : MonoBehaviour
@@ -177,18 +176,36 @@ public class PathSegment : MonoBehaviour
         public float LineWidth;
         public int AvgPointsCount;
     }
-   
-    private List<Vector2>       _points;
-    private List<Vector2>       _pointsProcessed;
-    private PathSegmentSettings _settings;
-    private MeshFilter          _meshFilter;
-    private MeshRenderer        _meshRenderer;
+
     [SerializeField]
-    private int   _decimate;
+    ReferenceViewRenderer _referenceViewAtBegin;
+
+    [SerializeField]
+    ReferenceViewRenderer _referenceViewAtEnd;
+
+    public void ApplySettings(MapSettings settngs)
+    {
+        _decimate       = Mathf.Max(1, settngs.decimation);
+        _lineWidth      = Mathf.Max(0.01f, settngs.lineWidth);
+        _avgPointsCount = Mathf.Clamp(settngs.smoothing, 0, 64);
+        RebuildPathMesh();
+        UpdateSettings();
+    }
+
+    public ReferenceViewRenderer ReferenceViewAtBegin => _referenceViewAtBegin;
+    public ReferenceViewRenderer ReferenceViewAtEnd => _referenceViewAtEnd;
+
+    private List<Vector2> _points;
+    private List<Vector2> _pointsProcessed;
+    private PathSegmentSettings _settings;
+    private MeshFilter   _meshFilter;
+    private MeshRenderer _meshRenderer;
+    [SerializeField]
+    private int _decimate;
     [SerializeField]
     private float _lineWidth = 0.05f;
     [SerializeField]
-    private int   _avgPointsCount;
+    private int _avgPointsCount;
     public float Length { get; private set; }
     public float LengthProcessed { get; private set; }
     public int Decimate
@@ -214,9 +231,9 @@ public class PathSegment : MonoBehaviour
     public int AvgPointsCount
     {
         get => _avgPointsCount;
-        set 
+        set
         {
-            _avgPointsCount = Mathf.Max(3, 64);
+            _avgPointsCount = Mathf.Clamp(value, 0, 64);
             UpdatePath();
             UpdateSettings();
         }
@@ -228,7 +245,7 @@ public class PathSegment : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        _meshFilter   = GetComponent<MeshFilter>();
+        _meshFilter = GetComponent<MeshFilter>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _points = new List<Vector2>();
         _avgPointsCount = 16;
@@ -237,7 +254,7 @@ public class PathSegment : MonoBehaviour
 
     private void OnValidate()
     {
-        if (_settings.LineWidth != LineWidth) 
+        if (_settings.LineWidth != LineWidth)
         {
             RebuildPathMesh();
             UpdateSettings();
@@ -280,8 +297,10 @@ public class PathSegment : MonoBehaviour
 
     public void UpdatePath(IProjectorXZ projector = null)
     {
-        ProcessPath();
+        // ProcessPath();
+        _pointsProcessed = _points;
         RebuildPathMesh(projector);
+        RenderReferenceViews();
     }
     private List<Vector2> ProcessPath()
     {
@@ -291,13 +310,36 @@ public class PathSegment : MonoBehaviour
     {
         _points = points;
         for (int i = 0; i < _points.Count - 1; i++) Length += (_points[i] - _points[i + 1]).magnitude;
-        ProcessPath();
+        // ProcessPath();
+        _pointsProcessed = _points;
         RebuildPathMesh(projector);
+        RenderReferenceViews();
     }
-    private void RebuildPathMesh(IProjectorXZ projector=null) 
+
+    private void RenderReferenceViews() 
+    {
+        Vector2 p1 = PathPointsProcessed[0];
+        Vector2 p2 = PathPointsProcessed[1];
+        Vector3 direction = new Vector3(p2.x - p1.x, 0.0f, p2.y - p1.y).normalized;
+        Vector3 normal;
+        _referenceViewAtBegin.transform.position = new Vector3(p1.x, AreaMap.Instance.Project(p1.x, p1.y), p1.y);
+        AreaMap.Instance.EvaluateNormal(_referenceViewAtBegin.transform.position, out normal);
+        _referenceViewAtBegin.transform.forward = Vector3.Cross(normal, Vector3.Cross(direction, normal)).normalized;
+        _referenceViewAtBegin.RenderReferenceView();
+
+        p1 = PathPointsProcessed[PathPointsProcessed.Count - 2];
+        p2 = PathPointsProcessed[PathPointsProcessed.Count - 1];
+        direction = new Vector3(p2.x - p1.x, 0.0f, p2.y - p1.y).normalized;
+        _referenceViewAtEnd.transform.position = new Vector3(p2.x, AreaMap.Instance.Project(p1.x, p1.y), p2.y);
+        AreaMap.Instance.EvaluateNormal(_referenceViewAtEnd.transform.position, out normal);
+        _referenceViewAtEnd.transform.forward = Vector3.Cross(normal, Vector3.Cross(direction, normal)).normalized;
+        _referenceViewAtEnd.RenderReferenceView();
+    }
+
+    private void RebuildPathMesh(IProjectorXZ projector = null)
     {
         if (_pointsProcessed == null) return;
-        if (_pointsProcessed.Count  == 0) return;
+        if (_pointsProcessed.Count == 0) return;
         Mesh polyStrip = ObjMesh.CreatePolyStrip(_pointsProcessed, _lineWidth, null, projector).ToUnityMesh();
         _meshFilter.sharedMesh = polyStrip;
         /// transform.position = Vector3.up * 0.001f;

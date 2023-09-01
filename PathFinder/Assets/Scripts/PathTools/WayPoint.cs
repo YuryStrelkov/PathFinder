@@ -8,12 +8,21 @@ public class WayPoint : MonoBehaviour
      2 - при перемещении делать запрос на перестройку пути сегмента слева, сегмента справа;
      3 - при удалении соединение предыдущего со следующим новым сегментом пути;
      */
-    // PathOfPoints _parent;
-    Vector3 position;
-
-    private static Stack<int>                _wayPointsIds;
     private static Dictionary<int, WayPoint> _wayPoints;
-    public static Stack<int>                WayPointsIds
+    private static Stack<int> _wayPointsIds;
+    [SerializeField]
+    Transform _pointVisualTransform;
+
+    [SerializeField]
+    private float _pointSize; /// = 1.0f;
+
+    [SerializeField]
+    private BoxCollider _collider;
+    private Vector3 _position;
+
+    public Vector3 ProjectedPosition => new Vector3(transform.position.x, AreaMap.Instance.Project(transform.position.x, transform.position.z), transform.position.z);
+
+    public static Stack<int> WayPointsIds
     {
         get
         {
@@ -29,12 +38,11 @@ public class WayPoint : MonoBehaviour
             return _wayPoints;
         }
     }
-
     public static WayPoint LastInstance { get; protected set; }
 
     private int _index;
-    WayPoint    _prev;
-    WayPoint    _next;
+    WayPoint _prev;
+    WayPoint _next;
     PathSegment _pathToNext;
     public int Index => _index;
     public bool HasNext => _next != null;
@@ -46,45 +54,52 @@ public class WayPoint : MonoBehaviour
 
     public void OnPositionHasChanged()
     {
-        if (_prev) _prev.LinkToNext();
+        transform.position = ProjectedPosition;
+        if (HasPrev) _prev.LinkToNext();
         LinkToNext();
     }
 
-    public void OnMoveBegin()
-    {
-        position = transform.position;
-    }
+    public void OnMoveBegin() => _position = transform.position;
 
     public void OnMoveEnd()
     {
-        if((position - transform.position).magnitude < 1e-3f) return;
+        if ((_position - transform.position).magnitude < 1e-3f) return;
         OnPositionHasChanged();
     }
-
-    private void LinkToNext()
+    public void LinkToPrev(List<Vector2> wayPoints = null) 
     {
-        if (!HasNext)
+        if (!HasPrev) return;
+        Prev.LinkToNext(wayPoints);
+    }
+    private static List<Vector2> LerpList(Vector2 from, Vector2 to, int steps = 64) 
+    {
+        List<Vector2> points = new List<Vector2>();
+        steps = Mathf.Max(3, steps);
+        float dt = 1.0f / (steps - 1);
+        for (int i = 0; i < steps; i++) points.Add(Vector2.Lerp(from, to, dt * i));
+        return points;
+    }
+
+    public void LinkToNext(List<Vector2> wayPoints = null)
+    {
+        if (!HasNext) if (_pathToNext) { Destroy(_pathToNext.gameObject); return; }
+
+        if (!_pathToNext) return;
+
+        Vector2 startPt = new Vector2(transform.position.x, transform.position.z);
+        Vector2 endPt   = new Vector2(_next.transform.position.x, _next.transform.position.z);
+        var points      = wayPoints == null ? null /*AreaMap.Instance.BuildPath(startPt, endPt)*/ : wayPoints;
+        if (points == null)
         {
-            if (_pathToNext) { Destroy(_pathToNext.gameObject); return; }
+            _pathToNext.BildPath(LerpList(startPt, endPt), AreaMap.Instance);
+            return;
         }
-      
-        if (_pathToNext)
+        if (points.Count == 0)
         {
-            Vector2 startPt = new Vector2(transform.position.x, transform.position.z);
-            Vector2 endPt = new Vector2(_next.transform.position.x, _next.transform.position.z);
-            var points = AreaMap.Instance.BuildPath(startPt, endPt);
-            if (points == null)
-            {
-                _pathToNext.BildPath(new List<Vector2>(new Vector2[] { startPt, endPt }), AreaMap.Instance);
-                return;
-            }
-            if (points.Count == 0)
-            {
-                _pathToNext.BildPath(new List<Vector2>(new Vector2[] { startPt, endPt }), AreaMap.Instance);
-                return;
-            }
-            _pathToNext.BildPath(points, AreaMap.Instance);
+            _pathToNext.BildPath(LerpList(startPt, endPt), AreaMap.Instance);
+            return;
         }
+        _pathToNext.BildPath(points, AreaMap.Instance);
     }
     public void OnPointDelete()
     {
@@ -95,64 +110,60 @@ public class WayPoint : MonoBehaviour
         if (_prev) _prev.LinkToNext();
     }
 
-    private void Init(WayPoint prev = null, WayPoint next = null)
+    private void Link(WayPoint prev = null, WayPoint next = null,  List<Vector2> pathPoints = null)
     {
         _prev = prev;
         _next = next;
         if (prev) prev._next = this;
         if (next) next._prev = this;
-        if (prev) 
+        if (prev)
         {
-            GameObject pathSeg = Resources.Load<GameObject>("Prefabs/PathSegment");
+            GameObject pathSeg = Resources.Load<GameObject>("Prefabs/LineSegment/PathSegment");
             if (!pathSeg) return;
             _prev._pathToNext = Instantiate(pathSeg).GetComponent<PathSegment>();
+            if (!_prev._pathToNext) return;
             _prev._pathToNext.transform.parent = SegmentsContainer.Instance.transform;
-            Vector2 startPt = new Vector2(_prev.transform.position.x, _prev.transform.position.z);
-            Vector2 endPt    = new Vector2(transform.position.x, transform.position.z);
-            if (_prev._pathToNext)
-            {
-                var points = AreaMap.Instance.BuildPath(startPt, endPt);
-                if (points == null)
-                {
-                    _prev._pathToNext.BildPath(new List<Vector2>(new Vector2[] { startPt, endPt }), AreaMap.Instance);
-                    return;
-                }
-                if (points.Count == 0)
-                {
-                    _prev._pathToNext.BildPath(new List<Vector2>(new Vector2[] { startPt, endPt }), AreaMap.Instance);
-                    return;
-                }
-                _prev._pathToNext.BildPath(points, AreaMap.Instance);
-            }
         }
-
     }
-
-    public void Start()
+    private void FixedUpdate()
     {
-        _index = WayPointsIds.Count != 0? WayPointsIds.Pop() : WayPoints.Count; 
+        float size = CamController.Instance.IsOrtho ? CamController.Instance.ControlledCamera.orthographicSize * _pointSize :
+                    (CamController.Instance.ControlledCamera.transform.position - transform.position).magnitude * _pointSize;
+
+        _pointVisualTransform.localScale = Mathf.Clamp(size, 0.25f, 100.0f) * Vector3.one;
+        _collider.size = _pointVisualTransform.localScale;
+    }
+    public void Awake()
+    {
+        _index = WayPointsIds.Count != 0 ? WayPointsIds.Pop() : WayPoints.Count;
 
         WayPoints.Add(_index, this);
 
         transform.parent = PointsContainer.Instance.transform;
 
-        Init(LastInstance, null);
+        _pointSize = 0.075f;
+
+        transform.position = ProjectedPosition;
+        
+        _collider = GetComponent<BoxCollider>();
+        
+        Link(LastInstance, null, null);
 
         LastInstance = this;
     }
     public void OnDestroy()
     {
+        OnPointDelete();
+
         WayPoints.Remove(_index);
-        
-        if (WayPoints.Count == 0) 
+
+        if (WayPoints.Count == 0)
         {
             _wayPointsIds.Clear();
             return;
         }
-        
+
         WayPointsIds.Push(_index);
-        
-        OnPointDelete();
     }
     private void OnDrawGizmos()
     {

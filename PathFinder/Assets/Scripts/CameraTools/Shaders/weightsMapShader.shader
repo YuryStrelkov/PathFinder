@@ -36,6 +36,7 @@ Shader "MapUtilsShaders/weightsMapShader"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.depth = (v.vertex.xyz - _MinBound.xyz) / (_MaxBound.xyz - _MinBound.xyz);
+                ///o.depth *= o.depth;
                 return o;
             }
 

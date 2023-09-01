@@ -283,28 +283,40 @@ public class ObjMesh
             dp20 = p2 - p1;
             u_coord += du;
             n_2 = Vector2.Perpendicular(dp20).normalized * stripWidth * 0.5f;
-            if (!IntersectLines(ref intersection_1, p0 + n_1, p1 + n_1, p1 + n_2, p2 + n_2)) 
-            {
-                p0 = p1;
-                n_1 = n_2;
-                continue;
-            }
-
-            if (!IntersectLines(ref intersection_2, p0 - n_1, p1 - n_1, p1 - n_2, p2 - n_2))
-            {
-                p0 = p1;
-                n_1 = n_2;
-                continue;
-            }
             f_index += 2;
-            p0 = p1;
-            n_1 = n_2;
+            if (IntersectLines(ref intersection_1, p0 + n_1, p1 + n_1, p1 + n_2, p2 + n_2) &&
+                IntersectLines(ref intersection_2, p0 - n_1, p1 - n_1, p1 - n_2, p2 - n_2)) 
+            {
+                // f_index += 2;
+                // p0 = p1;
+                // n_1 = n_2;
+                mesh.AddVertex(new Vector3(intersection_1.x, projector.Project(intersection_1.x, intersection_1.y), intersection_1.y));
+                mesh.AddVertex(new Vector3(intersection_2.x, projector.Project(intersection_2.x, intersection_2.y), intersection_2.y));
+                mesh.AddUv(new Vector2(u_coord / u_length, 1.0f));
+                mesh.AddUv(new Vector2(u_coord / u_length, 0.0f));
+                mesh.AddFace(new Face(f_index - 4, f_index - 4, 0, f_index - 3, f_index - 3, 0, f_index - 2, f_index - 2, 0));
+                mesh.AddFace(new Face(f_index - 3, f_index - 3, 0, f_index - 1, f_index - 1, 0, f_index - 2, f_index - 2, 0));
+
+                p0 = p1;
+                n_1 = n_2;
+                continue;
+            }
+            intersection_1 = p1 + n_1;
+            intersection_2 = p1 - n_1;
             mesh.AddVertex(new Vector3(intersection_1.x, projector.Project(intersection_1.x, intersection_1.y), intersection_1.y));
             mesh.AddVertex(new Vector3(intersection_2.x, projector.Project(intersection_2.x, intersection_2.y), intersection_2.y));
-            mesh.AddUv    (new Vector2(u_coord / u_length, 1.0f));
-            mesh.AddUv    (new Vector2(u_coord / u_length, 0.0f));
-            mesh.AddFace  (new Face(f_index - 4, f_index - 4, 0, f_index - 3, f_index - 3, 0, f_index - 2, f_index - 2, 0));
-            mesh.AddFace  (new Face(f_index - 3, f_index - 3, 0, f_index - 1, f_index - 1, 0, f_index - 2, f_index - 2, 0));
+            mesh.AddUv(new Vector2(u_coord / u_length, 1.0f));
+            mesh.AddUv(new Vector2(u_coord / u_length, 0.0f));
+            mesh.AddFace(new Face(f_index - 4, f_index - 4, 0, f_index - 3, f_index - 3, 0, f_index - 2, f_index - 2, 0));
+            mesh.AddFace(new Face(f_index - 3, f_index - 3, 0, f_index - 1, f_index - 1, 0, f_index - 2, f_index - 2, 0));
+            p0 = p1;
+            n_1 = n_2;
+            ///if (!IntersectLines(ref intersection_2, p0 - n_1, p1 - n_1, p1 - n_2, p2 - n_2))
+            ///{
+            ///    p0 = p1;
+            ///    n_1 = n_2;
+            ///    continue;
+            ///}
         }
         p0 = points[points.Count- 1];
         f_index += 2;

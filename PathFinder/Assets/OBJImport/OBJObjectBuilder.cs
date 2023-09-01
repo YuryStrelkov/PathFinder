@@ -89,9 +89,11 @@ public class OBJObjectBuilder {
 			submesh++;
 		}
 		mr.sharedMaterials = materialArray;
-
+		int cntr = 0;
+		foreach(var m in materialArray) cntr += m == null ? 0 : 1;
+		mr.enabled = cntr != 0;
 		//add meshfilter
-		var mf = go.AddComponent<MeshFilter>();
+			var mf = go.AddComponent<MeshFilter>();
 		submesh = 0;
 
 		var msh = new Mesh() {

@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections;
 
 
 public struct MapNode: IEquatable<MapNode>, IComparable<MapNode>
@@ -56,6 +56,8 @@ public class AStar
     private WeightsMap  _map;
     private Vector2     _physicalSize;
     private Vector2     _physicalOrig;
+    private MapNode     _minimalNode;
+
     public Vector2 Size
     {
         get => _physicalSize;
@@ -76,15 +78,17 @@ public class AStar
     private List<Vector2> BuildRealWorldPath(List<Point> path, bool reverce = false)
     {
         List<Vector2> worldPath = new List<Vector2>();
-        float dx = Size.x / Weights.Cols;
-        float dy = Size.y / Weights.Rows;
+        float d_col = Size.y / Weights.Cols;
+        float d_row = Size.x / Weights.Rows;
+        float rowOffset = -Size.x * 0.5f + Orig.y;
+        float colOffset = Size.y * 0.5f + Orig.x;
         if (reverce)
         {
-            foreach (Point pt in path) worldPath.Add(new Vector2((pt.row + 0.5f) * dy + Orig.y - Size.y * 0.5f,  (pt.col + 0.5f) * dx + Orig.x - Size.x * 0.5f));
+            foreach (Point pt in path) worldPath.Add(new Vector2((pt.row + 0.5f) * d_row + rowOffset,  (-pt.col + 0.5f) * d_col + colOffset));
         }
         else 
         {
-            foreach (Point pt in path) worldPath.Insert(0, new Vector2((pt.row + 0.5f) * dy + Orig.y - Size.y * 0.5f, (pt.col + 0.5f) * dx + Orig.x - Size.x * 0.5f));
+            foreach (Point pt in path) worldPath.Insert(0, new Vector2((pt.row + 0.5f) * d_row + rowOffset, (-pt.col + 0.5f) * d_col + colOffset));
         }
         return worldPath;
     }
@@ -158,11 +162,14 @@ public class AStar
             if (!_open.ContainsKey(hash))
             {
                 _open.Add(hash, node);
+                // if (node < _minimalNode) _minimalNode = node;
                 continue;
             }
 
             if(_open[hash].cost < newCost) continue;
             _open[hash] = node;
+            // if (node < _minimalNode) _minimalNode = node;
+
         }
         return false;
     }
@@ -186,17 +193,30 @@ public class AStar
     }
     private Point GetCellPoint(Vector2 t)
     {
-        return new Point((short)(((t.x - Orig.y) / Size.y + 0.5f) * (Weights.Rows - 1)),
-                         (short)(((t.y - Orig.x) / Size.x + 0.5f) * (Weights.Cols - 1)));
+        // x - cols
+        // y - rows
+        float aspect = Size.x / Size.y;
+        return new Point((short)((/*1.0f - */(t.x / aspect + Size.y * 0.5f - Orig.y) / Size.y) * (Weights.Rows - 1)), 
+                         (short)((1.0f     - (t.y * aspect + Size.x * 0.5f - Orig.x) / Size.x) * (Weights.Cols - 1)));
+    }
+    private Vector2 GetCellUv(Vector2 t)
+    {
+        // x - cols
+        // y - rows
+        float aspect = Size.x / Size.y;
+        return new Vector2(((/*1.0f - */(t.x / aspect + Size.y * 0.5f - Orig.y) / Size.y)),
+                           ((1.0f - (t.y * aspect + Size.x * 0.5f - Orig.x) / Size.x)));
+    }
+    public float GetWeightBilinear(Vector2 pos) => Weights.GetWeightsBilinear(GetCellUv(pos));
+    public float GetWeight(Vector3 pos)
+    {
+        return Weights[GetCellPoint(new Vector2(pos.x, pos.z))];
     }
     public float GetWeight(Vector2 pos)
     {
         return Weights[GetCellPoint(pos)];
     }
-    public float GetWeight(Vector3 pos)
-    {
-        return Weights[GetCellPoint(new Vector2(pos.x, pos.z))];
-    }
+    public float GetWeightBilinearNormalized(Vector2 pos) => Weights.GetWeightsBilinearNormalized(GetCellUv(pos));
 
     public float GetWeightNormalized(Vector2 pos)
     {
@@ -242,18 +262,20 @@ public class AStar
             dist   = Heuristics.DiagonalDistance2D(end, start)
         };
         _open.Add(_hash, _node);
+        
+        _minimalNode = _node;
+
+        // SetupMinimalNode();
 
         while (true)
         {
+            // _node = _minimalNode; //  _open.Values.Min();
             _node = _open.Values.Min();
             _hash = _node.pos.Hash();
             _clsd.Add(_hash, _node);
             _open.Remove(_hash);
-            if (FillOpen(start, end, _node, ref _open, ref _clsd))
-            {
-                _success = true;
-                break;
-            };
+            _success = FillOpen(start, end, _node, ref _open, ref _clsd);
+            if (_success) break;
             if (_open.Count == 0) break;
             if (_cntr == Weights.NCells) 
             {
@@ -270,8 +292,6 @@ public class AStar
         
         return path;
     }
-
-
 
     private IEnumerator SearchPathEnum(List<Vector2> newPath, Point start, Point end) //, bool pointsSeeEachOther = false)
     {
@@ -300,7 +320,7 @@ public class AStar
             newPath = path;
             yield break;
         }
-
+        
         Dictionary<int, MapNode> _open  = new Dictionary<int, MapNode>();
         Dictionary<int, MapNode> _clsd = new Dictionary<int, MapNode>();
         float _t_start = Time.time;
@@ -328,11 +348,8 @@ public class AStar
             _hash = _node.pos.Hash();
             _clsd.Add(_hash, _node);
             _open.Remove(_hash);
-            if (FillOpen(start, end, _node, ref _open, ref _clsd))
-            {
-                _success = true;
-                break;
-            };
+            _success = FillOpen(start, end, _node, ref _open, ref _clsd);
+            if (_success) break;
             if (_open.Count == 0) break;
             if (_cntr == Weights.NCells)
             {

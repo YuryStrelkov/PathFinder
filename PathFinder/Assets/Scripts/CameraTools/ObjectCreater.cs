@@ -33,6 +33,10 @@ public class ObjectCreater : MonoBehaviour
 
         GameObject gameObject = _prefab == null ? GameObject.CreatePrimitive(PrimitiveType.Cube) : GameObject.Instantiate(_prefab);
         gameObject.transform.position = end;
+        WayPoint wp = gameObject.GetComponent<WayPoint>();
+        if (!wp) return;
+        wp.transform.position = wp.ProjectedPosition;
+        wp.LinkToPrev();
     }
 
     void Start() =>_camera = GetComponent<Camera>();

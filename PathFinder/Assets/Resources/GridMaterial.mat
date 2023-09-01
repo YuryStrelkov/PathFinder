@@ -109,7 +109,7 @@ Material:
     - _grid_alpha: 0.5
     - _grid_x_step: 1
     - _grid_y_step: 1
-    - _line_size: 0.05
+    - _line_size: 0.01
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

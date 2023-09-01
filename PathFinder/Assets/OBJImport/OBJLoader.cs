@@ -304,7 +304,7 @@ namespace Dummiesman
             if (!string.IsNullOrEmpty(mtlPath) && File.Exists(mtlPath))
             {
                 var mtlLoader = new MTLLoader();
-                Materials = mtlLoader.Load(mtlPath);
+                /// Materials = mtlLoader.Load(mtlPath);
 
                 using (var fs = new FileStream(path, FileMode.Open))
                 {
