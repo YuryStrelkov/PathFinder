@@ -16,7 +16,7 @@ public struct WeightsMap
         _wieghts = new float[wieghts.Length];
         float wieghts_max = wieghts.Max();
         float wieghts_min = wieghts.Min();
-        float ratio = 1.0f / (wieghts_max - wieghts_min) * (MAX_WEIGHT - MIN_WEIGHT);
+        float ratio = (MAX_WEIGHT - MIN_WEIGHT) / (wieghts_max - wieghts_min);
         for (int index = 0; index < _wieghts.Length; index++)
         {
             _wieghts[index] = (wieghts[index] - wieghts_min) * ratio + MIN_WEIGHT;
@@ -29,7 +29,6 @@ public struct WeightsMap
         _wieghts = new float[texture.height * texture.width];
         Color32[] pixels = texture.GetPixels32();
 
-        //float devider = 1.0f / 3.0f / 255.0f;
         float devider = 1.0f / 255.0f;
 
         float ratio = MAX_WEIGHT - MIN_WEIGHT;

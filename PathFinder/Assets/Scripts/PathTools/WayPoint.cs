@@ -88,7 +88,8 @@ public class WayPoint : MonoBehaviour
 
         Vector2 startPt = new Vector2(transform.position.x, transform.position.z);
         Vector2 endPt   = new Vector2(_next.transform.position.x, _next.transform.position.z);
-        var points      = wayPoints == null ? null /*AreaMap.Instance.BuildPath(startPt, endPt)*/ : wayPoints;
+        /// var points      = wayPoints == null ? null /*AreaMap.Instance.BuildPath(startPt, endPt)*/ : wayPoints;
+        var points = wayPoints == null ? AreaMap.Instance.BuildPath(startPt, endPt) : wayPoints;
         if (points == null)
         {
             _pathToNext.BildPath(LerpList(startPt, endPt), AreaMap.Instance);

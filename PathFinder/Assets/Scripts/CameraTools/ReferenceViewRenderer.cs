@@ -30,19 +30,26 @@ public class ReferenceViewRenderer : MonoBehaviour
         }
     }
 
+    public Camera RenderCamera => _camera;
+
     public Matrix4x4 TransformMatrix => transform.localToWorldMatrix;
     public Matrix4x4 ProjectionMatrix => _camera.projectionMatrix;
     protected void InitRenderTexture()
     {
         if (_RT_Target != null) DisposeRenderTexture();
         int resolution = (int)_RT_TextureResoution;
+        if (resolution == 0) 
+        {
+            _RT_TextureResoution = ReferenceViewTextureResoultion.middle;
+            resolution = (int)_RT_TextureResoution;
+        }
         if (_aspect > 1.0f)
         {
-            _RT_Target = new RenderTexture(resolution, (int)(resolution / _aspect), 16, RenderTextureFormat.ARGB32);
+            _RT_Target = new RenderTexture(resolution, (int)(resolution / _aspect), 16, RenderTextureFormat.RFloat);
         }
         else 
         {
-            _RT_Target = new RenderTexture((int)(resolution / _aspect), resolution, 16, RenderTextureFormat.ARGB32);
+            _RT_Target = new RenderTexture((int)(resolution / _aspect), resolution, 16, RenderTextureFormat.RFloat);
         }
         _RT_Target.Create();
         _camera.targetTexture = _RT_Target;
@@ -61,7 +68,7 @@ public class ReferenceViewRenderer : MonoBehaviour
     public Texture2D ToUnityTexture() 
     {
         var currentRT = RenderTexture.active;
-        Texture2D tex = new Texture2D(_RT_Target.width, _RT_Target.height, TextureFormat.ARGB32, false);
+        Texture2D tex = new Texture2D(_RT_Target.width, _RT_Target.height, TextureFormat.RFloat, false);
         RenderTexture.active = _RT_Target;
         tex.ReadPixels(new Rect(0, 0, _RT_Target.width, _RT_Target.height), 0, 0);
         RenderTexture.active = currentRT;

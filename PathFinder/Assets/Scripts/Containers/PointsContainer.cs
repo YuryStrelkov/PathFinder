@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 using System.IO;
 using System.Text;
 
@@ -31,7 +31,7 @@ public class PointsContainer : MonoBehaviour
             var wp = t.gameObject.GetComponent<WayPoint>();
             if (!wp) continue;
             if (!wp.PathToNext) continue;
-            wp.PathToNext.ApplySettings(settngs);
+            wp.PathToNext.ApplySettings(settngs, AreaMap.Instance);
         }
         Material pointMat = Resources.Load<Material>("Prefabs/WayPoint/WayPointMaterial");
         if (pointMat) pointMat.color = new Color(settngs.pointsColor.x, settngs.pointsColor.y, settngs.pointsColor.z);
@@ -78,6 +78,30 @@ public class PointsContainer : MonoBehaviour
         }
         return builder.ToString();
     }
+    private static Matrix4x4 BuildTransformRelativeView(WayPoint wp) 
+    {
+        Vector3 forward = wp.Next != null ? (wp.Next.transform.position - wp.transform.position).normalized:
+            (wp.transform.position - wp.Prev.transform.position).normalized;
+        Vector3 right = Vector3.Cross(forward, Vector3.up).normalized;
+        Vector3 up    = Vector3.Cross(right,   forward).normalized;
+        Matrix4x4 transform = Matrix4x4.identity;
+        transform.m00 = right.x;
+        transform.m10 = right.y;
+        transform.m20 = right.z;
+
+        transform.m01 = up.x;
+        transform.m11 = up.y;
+        transform.m21 = up.z;
+
+        transform.m02 = forward.x;
+        transform.m12 = forward.y;
+        transform.m22 = forward.z;
+
+        transform.m03 = wp.transform.position.x;
+        transform.m13 = wp.transform.position.y;
+        transform.m23 = wp.transform.position.z;
+        return transform;
+    }
 
     public string ViewsAsJsonString(string viewsDir = "")
     {
@@ -89,9 +113,19 @@ public class PointsContainer : MonoBehaviour
 
         if (!start.PathToNext) return "";
 
+        Vector3 startPointPosition = start.transform.position;
+        
+        Vector3 startPointDirection = start.Next != null ? (start.Next.transform.position - start.transform.position).normalized : Vector3.forward;
+
+        Matrix4x4 transfrom = BuildTransformRelativeView(start);
+
+        EnvioRenderer.Instance.Render(startPointPosition, startPointDirection, startPointPosition, transfrom);
+
         if (!Directory.Exists(viewsDir)) Directory.CreateDirectory(viewsDir);
 
         if (!viewsDir.EndsWith("\\")) viewsDir += "\\";
+
+        EnvioRenderer.Instance.SaveEnvioRenders($"{viewsDir}startPointEnvio\\");
 
         while (true)
         {
@@ -135,6 +169,12 @@ public class PointsContainer : MonoBehaviour
             if (!start.PathToNext) break;
             builder.Append(",\n");
         }
+        startPointDirection = start.Prev != null ? (start.transform.position - start.Prev.transform.position).normalized: Vector3.forward;
+
+        EnvioRenderer.Instance.Render(start.transform.position, startPointDirection, startPointPosition, transfrom);
+
+        EnvioRenderer.Instance.SaveEnvioRenders($"{viewsDir}endPointEnvio\\");
+
         return builder.ToString();
     }
 
@@ -178,11 +218,13 @@ public class PointsContainer : MonoBehaviour
         }
         return flag;
     }
-    private bool SavePath(string path2file, bool processed = true)
+    private bool SavePath(string path2file, bool processed = true, bool localSpace=true)
     {
         Debug.Log($"Saving path data as points list to: {path2file}");
 
         WayPoint start = GetFirstAtPath();
+
+        Matrix4x4 transfrom = localSpace ? BuildTransformRelativeView(start).inverse : Matrix4x4.identity;
 
         if (start == null) return false;
 
@@ -195,8 +237,8 @@ public class PointsContainer : MonoBehaviour
 
             while (true)
             {
-                pos = start.transform.position;
-                writer.Write($"{-(int)(pos.x - startPos.x)} {-(int)(pos.z - startPos.z)}\n".Replace(',', '.'));
+                pos = transfrom.MultiplyPoint(start.transform.position);
+                writer.Write($"{(int)(pos.x)} {(int)(pos.z)}\n".Replace(',', '.'));
                 // int pointsCount = processed ? start.PathToNext.PathPointsProcessed.Count : start.PathToNext.PathPointsRaw.Count;
                 // foreach (var p in processed ? start.PathToNext.PathPointsProcessed : start.PathToNext.PathPointsRaw)
                 // {
@@ -274,6 +316,9 @@ public class PointsContainer : MonoBehaviour
 
             Vector3 p0 = start.transform.position;
             current = start;
+            
+            Matrix4x4 transfrom = BuildTransformRelativeView(start).inverse;
+
             while (true)
             {
                 // foreach (Vector2 pt in current.PathToNext.PathPointsRaw)
@@ -282,7 +327,10 @@ public class PointsContainer : MonoBehaviour
                 //     array[cntr + 1] = pt.y;
                 //     cntr += 2;
                 // }
-                array[cntr] = new Vector2(current.transform.position.x - p0.x, current.transform.position.z - p0.z);
+                // p0 = transfrom.MultiplyPoint(current.transform.position);
+                // writer.Write($"{(int)(pos.x)} {(int)(pos.z)}\n".Replace(',', '.'));
+                // array[cntr] = new Vector2(current.transform.position.x - p0.x, current.transform.position.z - p0.z);
+                array[cntr] = transfrom.MultiplyPoint(current.transform.position); ///new Vector2(current.transform.position.x - p0.x, current.transform.position.z - p0.z);
                 cntr += 1;
                 if (!current.HasNext) break;
                 current = current.Next;

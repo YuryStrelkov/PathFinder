@@ -183,12 +183,12 @@ public class PathSegment : MonoBehaviour
     [SerializeField]
     ReferenceViewRenderer _referenceViewAtEnd;
 
-    public void ApplySettings(MapSettings settngs)
+    public void ApplySettings(MapSettings settngs, IProjectorXZ projector = null)
     {
         _decimate       = Mathf.Max(1, settngs.decimation);
         _lineWidth      = Mathf.Max(0.01f, settngs.lineWidth);
         _avgPointsCount = Mathf.Clamp(settngs.smoothing, 0, 64);
-        RebuildPathMesh();
+        RebuildPathMesh(projector);
         UpdateSettings();
     }
 
@@ -248,7 +248,7 @@ public class PathSegment : MonoBehaviour
         _meshFilter = GetComponent<MeshFilter>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _points = new List<Vector2>();
-        _avgPointsCount = 16;
+        _avgPointsCount = 8;
         _decimate = 0;
     }
 
@@ -297,8 +297,8 @@ public class PathSegment : MonoBehaviour
 
     public void UpdatePath(IProjectorXZ projector = null)
     {
-        // ProcessPath();
-        _pointsProcessed = _points;
+        ProcessPath();
+        // _pointsProcessed = _points;
         RebuildPathMesh(projector);
         RenderReferenceViews();
     }
@@ -310,8 +310,8 @@ public class PathSegment : MonoBehaviour
     {
         _points = points;
         for (int i = 0; i < _points.Count - 1; i++) Length += (_points[i] - _points[i + 1]).magnitude;
-        // ProcessPath();
-        _pointsProcessed = _points;
+        ProcessPath();
+        // _pointsProcessed = _points;
         RebuildPathMesh(projector);
         RenderReferenceViews();
     }

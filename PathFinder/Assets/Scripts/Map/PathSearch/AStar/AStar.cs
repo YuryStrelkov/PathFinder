@@ -56,7 +56,8 @@ public class AStar
     private WeightsMap  _map;
     private Vector2     _physicalSize;
     private Vector2     _physicalOrig;
-    private MapNode     _minimalNode;
+    private int         _minimalNodeHash;
+    private PriorityQueue<MapNode> _minimalNodes;
 
     public Vector2 Size
     {
@@ -143,7 +144,7 @@ public class AStar
 
             if (!IsValidPt(ref neighbour)) continue;
 
-            hash = neighbour.Hash();
+            hash = neighbour.GetHashCode();
 
             if (_closed.ContainsKey(hash)) continue;
 
@@ -153,23 +154,21 @@ public class AStar
 
             MapNode node = new MapNode
             {
-                cost   = newCost,
-                dist   = Heuristics.DiagonalDistance2D(neighbour, target),
-                pos    = neighbour,
+                cost = newCost,
+                dist = Heuristics.DiagonalDistance2D(neighbour, target),
+                pos = neighbour,
                 parent = current.pos
             };
 
             if (!_open.ContainsKey(hash))
             {
                 _open.Add(hash, node);
-                // if (node < _minimalNode) _minimalNode = node;
+                // _minimalNodes.Append(node);
                 continue;
             }
-
-            if(_open[hash].cost < newCost) continue;
+            if (_open[hash].cost < newCost) continue;
             _open[hash] = node;
-            // if (node < _minimalNode) _minimalNode = node;
-
+            // _minimalNodes.Append(node);
         }
         return false;
     }
@@ -184,7 +183,7 @@ public class AStar
         while (last.parent != Point.MiusOnes)
         {
             path.Add(last.pos);
-            last = _closed[last.parent.Hash()];
+            last = _closed[last.parent.GetHashCode()];
         }
         path.Add(key.Start);
 
@@ -238,10 +237,7 @@ public class AStar
             Debug.LogWarning("End point in forbidden zone...");
             return null;
         }
-        // if (pointsSeeEachOther) 
-        // {
-        //     if (!Weights.RayCast(start, end)) return null; 
-        // }
+
         PointsPair _pair_key = new PointsPair(start, end);
 
         List<Vector2> path = null;
@@ -252,7 +248,7 @@ public class AStar
         Dictionary<int, MapNode> _clsd = new Dictionary<int, MapNode>();
         
         bool    _success = false;
-        int     _hash    = start.Hash();
+        int     _hash    = start.GetHashCode();
         int     _cntr    = 0;
         MapNode _node    = new MapNode
         {
@@ -261,19 +257,19 @@ public class AStar
             parent = Point.MiusOnes,
             dist   = Heuristics.DiagonalDistance2D(end, start)
         };
+        // _minimalNodes.Clear();
         _open.Add(_hash, _node);
-        
-        _minimalNode = _node;
-
-        // SetupMinimalNode();
-
+        // _minimalNodes.Append(_node);
         while (true)
         {
-            // _node = _minimalNode; //  _open.Values.Min();
             _node = _open.Values.Min();
-            _hash = _node.pos.Hash();
-            _clsd.Add(_hash, _node);
-            _open.Remove(_hash);
+            _hash = _node.pos.GetHashCode();
+            _clsd.Add(_hash, _node);      // (_hash, _node);
+            _open.Remove(_hash);             // (_hash);
+            // _node = _minimalNodes.Pop();     // _open.Values.Min();
+            // _hash = _node.pos.GetHashCode();
+            // _clsd.Add   (_hash, _node);      // (_hash, _node);
+            // _open.Remove(_hash);             // (_hash);
             _success = FillOpen(start, end, _node, ref _open, ref _clsd);
             if (_success) break;
             if (_open.Count == 0) break;
@@ -285,11 +281,8 @@ public class AStar
             _cntr++;
         }
         if (!_success) return null;
-
         BuildPath(_pair_key, ref _clsd);
-
         if(!CheckCashedPath(ref path, _pair_key)) return null;
-        
         return path;
     }
 
@@ -325,7 +318,7 @@ public class AStar
         Dictionary<int, MapNode> _clsd = new Dictionary<int, MapNode>();
         float _t_start = Time.time;
         bool  _success = false;
-        int   _hash    = start.Hash();
+        int   _hash    = start.GetHashCode();
         int   _cntr    = 0;
         MapNode _node  = new MapNode
         {
@@ -345,7 +338,7 @@ public class AStar
             }
 
             _node = _open.Values.Min();
-            _hash = _node.pos.Hash();
+            _hash = _node.pos.GetHashCode();
             _clsd.Add(_hash, _node);
             _open.Remove(_hash);
             _success = FillOpen(start, end, _node, ref _open, ref _clsd);
@@ -387,12 +380,13 @@ public class AStar
     {
         _map        = new WeightsMap(rows, cols, weigths);
         _path_cache = new Dictionary<PointsPair, List<Point>>();
-
+        _minimalNodes = new PriorityQueue<MapNode>();
     }
     public AStar(Texture2D texture, bool invertWeights = false)
     {
         _map        = new WeightsMap(texture, invertWeights);
         _path_cache = new Dictionary<PointsPair, List<Point>>();
+        _minimalNodes = new PriorityQueue<MapNode>();
     }
 }
 

@@ -12,6 +12,9 @@ public struct MapSettings
     public float lineWidth;
     public int decimation;
     public int smoothing;
+    public Vector2Int viewEnvioGridSize;
+    public Vector2 viewEnvioGridStep;
+    public int envioMapResolution;
     public float weightMapThresshold;
     public int weightMapResolution;
     public int referenceMapResolution;
@@ -137,13 +140,14 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
     public float Project(float x, float z)
     {
         if (_pathFinder == null) return 0.0f;
-        return _pathFinder.GetWeightNormalized(new Vector2(x, z)) * (_heightMax - _heightMin) * 0.5f + _heightMin + 0.001f;
+        return _pathFinder.GetWeightNormalized(new Vector2(x, z)) * (_heightMax - _heightMin) * 0.5f + _heightMin * 0.5f + 0.001f;
+        // _heightsRenderer.transform.position.y + 0.001f;
     }
 
     public void SwitchProjection()
     {
-        _heightsRenderer.gameObject.SetActive(!_heightsRenderer.gameObject.activeInHierarchy);
-        _defaultRenderer.gameObject.SetActive(!_defaultRenderer.gameObject.activeInHierarchy);
+        // _heightsRenderer.gameObject.SetActive(!_heightsRenderer.gameObject.activeInHierarchy);
+        // _defaultRenderer.gameObject.SetActive(!_defaultRenderer.gameObject.activeInHierarchy);
     }
     public List<Vector2> BuildPath(Vector2 from, Vector2 to)
     {
@@ -157,11 +161,11 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
         _weightsRendererCamera.orthographicSize = 0.5f * Mathf.Max(_size.x, _size.y) * _size.y / _size.x;
         WeightMapRenderer.Instance.Aspect = _size.x / _size.y;
         WeightMapRenderer.Instance.Resoultion = (ReferenceViewRenderer.ReferenceViewTextureResoultion)settings.settings.weightMapResolution;
-        // if (File.Exists(mapWeightsPath))
-        // {
+        if (File.Exists(mapWeightsPath))
+        {
             _wightsMap = LoadPNG(mapWeightsPath);
             if(InitAStar())return true;
-        // }
+        }
         WeightMapRenderer.Instance.RenderReferenceView();
         _wightsMap = WeightMapRenderer.Instance.ToUnityTexture();
         return InitAStar();
@@ -169,12 +173,12 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
     private bool LoadMapTexture(string mapDirectory, AreaMapInfo settings)
     {
         string mapWeightsPath = mapDirectory.EndsWith("\\") ? mapDirectory + settings.mapTexture : mapDirectory + "\\" + settings.mapTexture;
-        // if (File.Exists(mapWeightsPath))
-        // {
+        if (File.Exists(mapWeightsPath))
+        {
             _defaultRenderer.MainTexture = LoadPNG(mapWeightsPath);
             return true;
-        // }
-        // return false;
+        }
+        return false;
     }
     private bool LoadGeometry(string mapDirectory, AreaMapInfo settings) 
     {
@@ -229,7 +233,7 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
             Destroy(newMesh);
             Vector3 meshSize   = mesh.sharedMesh.bounds.size;
             Vector3 meshCenter = mesh.sharedMesh.bounds.center;
-            Vector3 shift = new Vector3(meshCenter.x, meshCenter.y - meshSize.y * 0.5f, meshCenter.z);
+            Vector3 shift = new Vector3(meshCenter.x, meshCenter.y, meshCenter.z);
             _heightsRenderer.transform.position = -shift;
             _heatRenderer.   transform.position = -shift;
             _defaultRenderer.transform.position = -shift;
@@ -269,10 +273,14 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
                                                        cameraSize * 0.5f + _gridController.transform.position);
             CamController.Instance.SetOrthoLimits(0.1f, Mathf.Max(meshSize.x, meshSize.z));
 
+            EnvioRenderer.Instance.Rows     = settings.settings.viewEnvioGridSize.x;
+            EnvioRenderer.Instance.Cols     = settings.settings.viewEnvioGridSize.y;
+            EnvioRenderer.Instance.GridSize = settings.settings.viewEnvioGridStep.x;
+
             _origin = new Vector2();
             _size = new Vector2(meshSize.x, meshSize.z);
-            _heightMin = 0.0f;
-            _heightMax = meshSize.y;
+            _heightMin = -meshSize.y * 0.5f;
+            _heightMax =  meshSize.y * 0.5f;
 
         // }
         // catch (System.Exception ex)
@@ -412,6 +420,8 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
             writer.Write($"\t\"mapModel\":                 \"{"Model/map.obj"}\",\n");
             writer.Write($"\t\"mapTexture\":               \"{"Model/mapTexture.png"}\",\n");
             writer.Write($"\t\"mapWeights\":               \"{"mapWeights.png"}\",\n");
+            // "viewEnvioGridSize": { "x": 5, "y": 5},
+            // "viewEnvioGridStep": { "x": 2.5, "y": 2.5},
             writer.Write($"\t\"settings\":\n");            
             writer.Write("\t{\n");                         
             writer.Write($"\t\t\"lineColor\":              {{ \"x\": {_settings.lineColor.x.ToString().Replace(',', '.')}," +
@@ -423,6 +433,11 @@ public class AreaMap : MonoBehaviour, IProjectorXZ
             writer.Write($"\t\t\"lineWidth\":              {_settings.lineWidth.ToString().Replace(',', '.')},\n");
             writer.Write($"\t\t\"smoothing\":              {_settings.smoothing},\n");
             writer.Write($"\t\t\"decimation\":             {_settings.decimation},\n");
+            writer.Write($"\t\t\"viewEnvioGridSize\":      {{ \"x\": { EnvioRenderer.Instance.Rows}," +
+                                                           $" \"y\": { EnvioRenderer.Instance.Cols}}},\n");
+            writer.Write($"\t\t\"viewEnvioGridStep\":      {{ \"x\": { EnvioRenderer.Instance.GridSize.ToString().Replace(',', '.')}," +
+                                                           $" \"y\": {EnvioRenderer.Instance.GridSize.ToString().Replace(',', '.')}}},\n");
+            writer.Write($"\t\t\"envioMapResolution\":     {(int)EnvioRenderer.Instance.Resoultion},\n");
             writer.Write($"\t\t\"weightMapThresshold\":    {_settings.weightMapThresshold.ToString().Replace(',', '.')},\n");
             writer.Write($"\t\t\"weightMapResolution\":    {_settings.weightMapResolution},\n");
             writer.Write($"\t\t\"referenceMapResolution\": {_settings.referenceMapResolution}\n");

@@ -56,26 +56,34 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Map\PathSearch\AStar\PriorityQueue.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
-    <Compile Include="Assets\Scripts\MeshLoading\TrisMeshLoader.cs" />
     <Compile Include="Assets\Scripts\CameraTools\WeightMapRenderer.cs" />
+    <Compile Include="Assets\Scripts\Map\PathSearch\AStar\UniquePriorityQueue.cs" />
     <Compile Include="Assets\Scripts\CameraTools\SurfaceSlider.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\SendPathForm.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
     <Compile Include="Assets\Scripts\Map\MapRenderer.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileTextMultiple.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
-    <Compile Include="Assets\Scripts\PathTools\PathOfPoints.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\PathDataSaveForm.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileText.cs" />
     <Compile Include="Assets\OBJImport\TextureLoader\BMPLoader.cs" />
     <Compile Include="Assets\Scripts\Containers\PointsContainer.cs" />
-    <Compile Include="Assets\Scripts\UIScripts\PathSegmentUIController.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\Obsolete\PathSegmentUIController.cs" />
     <Compile Include="Assets\OBJImport\TextureLoader\TGALoader.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileText.cs" />
     <Compile Include="Assets\Scripts\Map\PathSearch\AStar\Heuristics.cs" />
+    <Compile Include="Assets\EnvioRenderer.cs" />
+    <Compile Include="Assets\Scripts\PythonScriptsExecutor.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\SettingsForm.cs" />
     <Compile Include="Assets\OBJImport\Samples\ObjFromStream.cs" />
     <Compile Include="Assets\Scripts\Containers\SegmentsContainer.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIConstants.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\UIForm.cs" />
     <Compile Include="Assets\Scripts\PathTools\PathSegment.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\MessageForm.cs" />
     <Compile Include="Assets\OBJImport\OBJObjectBuilder.cs" />
     <Compile Include="Assets\OBJImport\MTLLoader.cs" />
     <Compile Include="Assets\Scripts\Map\PathSearch\AStar\AStar.cs" />
@@ -92,24 +100,25 @@
     <Compile Include="Assets\Scripts\MeshLoading\TrisMehs.cs" />
     <Compile Include="Assets\OBJImport\TextureLoader\ColorExtensions.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserLinux.cs" />
-    <Compile Include="Assets\Scripts\UIScripts\UIController.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainWindow.cs" />
     <Compile Include="Assets\Scripts\Map\PathSearch\AStar\WeightsMap.cs" />
     <Compile Include="Assets\OBJImport\OBJLoaderHelper.cs" />
     <Compile Include="Assets\OBJImport\OBJLoader.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileImage.cs" />
     <Compile Include="Assets\OBJImport\TextureLoader\DDSLoader.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\UIMainwindowElemenets\ExitForm.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
     <Compile Include="Assets\Scripts\Map\PathSearch\AStar\Point.cs" />
     <Compile Include="Assets\Scripts\Map\AreaMap.cs" />
     <Compile Include="Assets\OBJImport\CharWordReader.cs" />
     <Compile Include="Assets\Scripts\Map\PathSearch\PathFinder.cs" />
-    <Compile Include="Assets\Scripts\UIScripts\MainWindowUI.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\Obsolete\MainWindowUI.cs" />
     <Compile Include="Assets\Scripts\PathTools\WayPoint.cs" />
     <Compile Include="Assets\Scripts\CamController.cs" />
-    <Compile Include="Assets\Scripts\UIScripts\VisualElementUtils.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\Obsolete\VisualElementUtils.cs" />
+    <Compile Include="Assets\Scripts\CameraTools\ReferenceViewRenderer.cs" />
     <Compile Include="Assets\OBJImport\TextureLoader\ImageLoaderHelper.cs" />
     <Compile Include="Assets\OBJImport\StringExtensions.cs" />
-    <Compile Include="Assets\ReferenceViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -133,6 +142,7 @@
     <None Include="Assets\UIComponents\CommonUIStyle.uss" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\Resources\uart_command.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\UIComponents\SimpleComponents\SidePanel.uxml" />

@@ -39,8 +39,7 @@ public struct Point : IEquatable<Point>
     {
         return $"{{\"row\": {row}, \"col\": {col}}}";
     }
-    public int Hash() => ((0x0000ffff & col) << 16) | (0x0000ffff & row);
-    public override int GetHashCode() => Hash();
+    public override int GetHashCode() => ((0x0000ffff & col) << 16) | (0x0000ffff & row);
     public static Point Unhash(int hash) => new Point((short)(hash & 0x0000ffff), (short)((hash >> 16) & 0x0000ffff));
 }
 
@@ -50,7 +49,7 @@ public struct PointsPair : IEquatable<PointsPair>
     private readonly Point _end;
     public static long HashPointsPair(Point p1, Point p2) 
     {
-       return (((long)p1.Hash() << 32) | (long)p2.Hash());
+       return (((long)p1.GetHashCode() << 32) | (long)p2.GetHashCode());
     }
     public static void UnhashPointsPair(long hash, ref Point p1, ref Point p2)
     {
